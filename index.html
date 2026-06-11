@@ -67,6 +67,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-green:hover{background:var(--teal)}
 .btn-done{background:var(--teal-mid);border-color:var(--teal);color:#fff;padding:12px 32px;font-size:15px;font-weight:600}
 .btn-done:hover{background:var(--teal)}
+.btn-share{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:6px}
+.btn-share:hover{background:rgba(255,255,255,.25)}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:600px){.g2{grid-template-columns:1fr}.icp-cols{grid-template-columns:1fr}}
 </style>
 </head>
@@ -75,10 +79,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="topbar">
   <span class="topbar-brand">LATAMCENT · KICKOFF TEMPLATE</span>
   <div class="topbar-right">
+    <button class="btn-share" id="bShare">🔗 Share link</button>
     <span class="prog-text" id="pLbl">Section 1 of 10</span>
     <div class="prog-bar-wrap"><div class="prog-bar-fill" id="pFill" style="width:10%"></div></div>
   </div>
 </div>
+
+<div class="toast" id="toast">✓ Link copied — share it with your team</div>
 
 <div class="container">
   <div class="card" id="main"></div>
@@ -167,6 +174,33 @@ return `<div class="sec-tag">Section 10</div><div class="sec-title">Cadence & cl
 
 const titles=['Call details','Pre-call prep','Current state','Defining success','Role & scope','Comp & logistics','Interview process','ICP','Sample profiles','Cadence & close'];
 
+function getShareURL(){
+  try{
+    const json=JSON.stringify(D);
+    const base=window.location.origin+window.location.pathname;
+    return base+'?d='+encodeURIComponent(json);
+  }catch(e){return window.location.href;}
+}
+
+function loadFromURL(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const d=params.get('d');
+    if(!d)return;
+    const parsed=JSON.parse(d);
+    Object.keys(parsed).forEach(sec=>{
+      if(D[sec])Object.assign(D[sec],parsed[sec]);
+    });
+  }catch(e){console.warn('Could not load shared data:',e);}
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
 function render(){
   const el=document.getElementById('main');
   const nav=`<div class="navrow">
@@ -203,6 +237,14 @@ function bind(){
   document.getElementById('bP')?.addEventListener('click',()=>{cur--;render();});
   document.getElementById('bN')?.addEventListener('click',()=>{cur++;render();});
   document.getElementById('bD')?.addEventListener('click',pdf);
+  document.getElementById('bShare')?.addEventListener('click',()=>{
+    const url=getShareURL();
+    navigator.clipboard.writeText(url).then(()=>{
+      showToast('✓ Link copied — share it with your team');
+    }).catch(()=>{
+      prompt('Copy this link:',url);
+    });
+  });
 }
 
 function pdf(){
@@ -275,6 +317,7 @@ function buildPDF(){
   doc.save(`LatamCent_Kickoff_${c}_${r}.pdf`);
 }
 
+loadFromURL();
 render();
 </script>
 </body>
