@@ -220,12 +220,36 @@ function buildPDF(){
   function chkY(n=20){if(y+n>274){doc.addPage();y=28;drawPageHeader();}}
   function drawPageHeader(){doc.setFillColor(...TEAL);doc.rect(0,0,W,22,'F');doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.text('LATAMCENT  ·  KICKOFF CALL RECORD',M,9);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(168,221,208);doc.text(`${D.s1.clientName||'—'}  ·  ${D.s1.role||'—'}  ·  ${D.s1.datetime||new Date().toLocaleDateString()}`,M,15.5);}
   function hdr(t,badge){chkY(12);doc.setFillColor(...TEAL);doc.rect(M,y,CW,8,'F');doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(t.toUpperCase(),M+4,y+5.5);if(badge){doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(168,221,208);doc.text(badge,M+CW-4,y+5.5,{align:'right'});}y+=11;}
-  function kv2(l1,v1,l2,v2){chkY(12);const hw=CW/2-3;function one(l,v,x){if(!v)return;doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...GRAY);doc.text(l.toUpperCase(),x,y);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...DARK);doc.text(doc.splitTextToSize(v,hw),x,y+4);}const n1=v1?doc.splitTextToSize(v1,hw).length:0;const n2=v2?doc.splitTextToSize(v2||'',hw).length:0;one(l1,v1,M);if(l2)one(l2,v2,M+CW/2+2);y+=Math.max(n1,n2)*4.5+8;}
+  function kv2(l1,v1,l2,v2){chkY(12);const hw=CW/2-8;function one(l,v,x){if(!v)return;doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...GRAY);doc.text(l.toUpperCase(),x,y);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...DARK);doc.text(doc.splitTextToSize(v,hw),x,y+4);}const n1=v1?doc.splitTextToSize(v1,hw).length:0;const n2=v2?doc.splitTextToSize(v2||'',hw).length:0;one(l1,v1,M);if(l2)one(l2,v2,M+CW/2+8);y+=Math.max(n1,n2)*4.5+8;}
   function kv1(l,v){if(!v)return;chkY(12);doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...GRAY);doc.text(l.toUpperCase(),M,y);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...DARK);const ls=doc.splitTextToSize(v,CW);doc.text(ls,M,y+4);y+=ls.length*4.5+8;}
   function qrow(n,q,v){if(!v)return;chkY(14);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(...TEAL_MID);doc.text(`Q${n}`,M,y+1);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...GRAY);const ql=doc.splitTextToSize(q,CW*0.36);doc.text(ql,M+8,y+1);doc.setFontSize(9);doc.setTextColor(...DARK);const vl=doc.splitTextToSize(v,CW*0.56);doc.text(vl,M+CW*0.43,y+1);const h=Math.max(ql.length,vl.length)*4.5+4;doc.setDrawColor(...LGRAY);doc.setLineWidth(0.2);doc.line(M,y+h,M+CW,y+h);y+=h+4;}
   function callout(t,bg,c){chkY(14);doc.setFillColor(...bg);const ls=doc.splitTextToSize(t,CW-18);const h=ls.length*4.5+10;doc.rect(M,y,CW,h,'F');doc.setFillColor(...c);doc.rect(M,y,2,h,'F');doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...c);doc.text(ls,M+6,y+6);y+=h+4;}
   function chklist(items,obj){items.forEach((t,i)=>{chkY(8);const done=obj[i];doc.setFontSize(8.5);doc.setTextColor(...(done?TEAL_MID:LGRAY));doc.setFont('helvetica',done?'bold':'normal');doc.text(done?'✓':'○',M,y);doc.setTextColor(...(done?DARK:GRAY));doc.setFont('helvetica','normal');const ls=doc.splitTextToSize(t,CW-9);doc.text(ls,M+7,y);y+=ls.length*5+2;});y+=3;}
-  function icp(musts,nices){chkY(20);const hw=CW/2-2;doc.setFillColor(252,235,235);doc.rect(M,y,hw,7,'F');doc.setFillColor(230,241,251);doc.rect(M+hw+4,y,hw,7,'F');doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(121,31,31);doc.text('NON-NEGOTIABLE',M+4,y+4.8);doc.setTextColor(12,68,124);doc.text('NICE TO HAVE',M+hw+8,y+4.8);y+=9;const mx=Math.max(musts.length,nices.length);for(let i=0;i<mx;i++){chkY(7);doc.setFont('helvetica','normal');doc.setFontSize(8.5);if(musts[i]){doc.setTextColor(121,31,31);doc.text(`● ${musts[i]}`,M+3,y);}if(nices[i]){doc.setTextColor(12,68,124);doc.text(`● ${nices[i]}`,M+hw+7,y);}y+=5.5;}y+=4;}
+  function icp(musts,nices){
+    chkY(20);
+    const hw=(CW/2)-6;
+    const xL=M, xR=M+CW/2+3;
+    // headers
+    doc.setFillColor(252,235,235);doc.rect(xL,y,hw,7,'F');
+    doc.setFillColor(230,241,251);doc.rect(xR,y,hw,7,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(7);
+    doc.setTextColor(121,31,31);doc.text('NON-NEGOTIABLE',xL+4,y+4.8);
+    doc.setTextColor(12,68,124);doc.text('NICE TO HAVE',xR+4,y+4.8);
+    y+=9;
+    const mx=Math.max(musts.length,nices.length);
+    const lineH=4.5;
+    for(let i=0;i<mx;i++){
+      doc.setFont('helvetica','normal');doc.setFontSize(8);
+      const mLines=musts[i]?doc.splitTextToSize('● '+musts[i],hw-4):[];
+      const nLines=nices[i]?doc.splitTextToSize('● '+nices[i],hw-4):[];
+      const rowH=Math.max(mLines.length,nLines.length,1)*lineH+2;
+      chkY(rowH+2);
+      if(mLines.length){doc.setTextColor(121,31,31);doc.text(mLines,xL+3,y);}
+      if(nLines.length){doc.setTextColor(12,68,124);doc.text(nLines,xR+3,y);}
+      y+=rowH;
+    }
+    y+=4;
+  }
   function stage(n,title,sub,fields){chkY(14);const h=fields?(sub?24:18):(sub?14:10);doc.setDrawColor(...LGRAY);doc.setLineWidth(0.3);doc.rect(M,y,CW,h,'S');doc.setFillColor(...TEAL_MID);doc.rect(M,y,2,h,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...DARK);doc.text(`${n}  ${title}`,M+5,y+6);let iy=y+6;if(sub){doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...GRAY);doc.text(sub,M+5,y+11);iy=y+11;}if(fields){const hw=CW/2-5;const[l1,v1]=fields[0]||[];const[l2,v2]=fields[1]||[];doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...GRAY);if(l1)doc.text(l1.toUpperCase(),M+5,iy+5);if(l2)doc.text(l2.toUpperCase(),M+CW/2+2,iy+5);doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...DARK);if(v1)doc.text(doc.splitTextToSize(v1,hw),M+5,iy+9);if(v2)doc.text(doc.splitTextToSize(v2,hw),M+CW/2+2,iy+9);}y+=h+4;}
   function profile(n,name,role,why,concern,rx,note){if(!name)return;chkY(36);const rxC={'Strong yes':[39,80,10],'Yes':[12,68,124],'Maybe':[99,56,6],'No':[121,31,31]};const rc=rxC[rx]||GRAY;doc.setFillColor(...TEAL_LT);doc.rect(M,y,CW,9,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(8,80,65);doc.text(`Profile ${n} — ${name}`,M+4,y+6);if(rx){doc.setFontSize(7.5);doc.setTextColor(...rc);doc.text(rx,M+CW-4,y+6,{align:'right'});}y+=11;kv2('Current role',role,'Reaction',rx);kv2('Why relevant',why,'Concern',concern);if(note)kv1('Notes',note);y+=2;}
 
